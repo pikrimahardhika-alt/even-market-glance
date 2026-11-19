@@ -1,0 +1,21 @@
+{
+  "name": "even-market-glance",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Glanceable Even G2 market brief with local-only price markers and no trading.",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --strictPort",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test"
+  },
+  "dependencies": {
+    "@evenrealities/even_hub_sdk": "0.0.16"
+  },
+  "devDependencies": {
+    "typescript": "~7.0.2",
+    "vite": "^8.3.6"
+  }
+}
