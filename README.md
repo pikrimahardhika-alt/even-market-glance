@@ -12,7 +12,7 @@ The official Even Hub simulator screenshot below shows a live quote and the +1% 
 
 ## Important timing note
 
-This is a **private pre-hackathon prototype** created on 20 November 2026. The official build window begins on 23 November 2026 at 12:00 Dubai time (15:00 WIB). DoraHacks rules say projects must be built during the hackathon. Do not present this pre-event work as a compliant final submission: continue or rebuild during the event and disclose pre-existing code/assets in the final README. Nothing in this folder has been published, deployed or submitted.
+This is a **pre-hackathon prototype** created on 20 November 2026. The official build window begins on 23 November 2026 at 12:00 Dubai time (15:00 WIB). DoraHacks rules say projects must be built during the hackathon. Do not present this pre-event work as a compliant final submission: continue or rebuild during the event and disclose pre-existing code/assets in the final README. The repository and read-only backend are public; the project has not been submitted.
 
 ## Run the local demo
 
@@ -46,9 +46,9 @@ The app checks the marker only after fresh market data arrives while the page is
 ## Data and production boundary
 
 - Source: [Coinbase Exchange Get product stats](https://docs.cdp.coinbase.com/exchange/reference/exchangerestapi_getproductstats), public `GET /products/{product_id}/stats`. The app computes 24-hour change as `(last - open) / open × 100`; volume is in the base asset.
-- Coinbase is the only external data provider, and the app has no Coinbase credentials. The local Node middleware—not the Even Hub web app—calls Coinbase.
-- `app.json` is a local development manifest. Its `https://api.example.invalid` whitelist entry is an intentional non-working placeholder. The local Vite middleware is not bundled into an installed app. Before packaging, host the same read-only API behind HTTPS, set `VITE_MARKET_API_BASE`, and replace the placeholder with the exact backend origin in `app.json`'s `network.whitelist`. Do not call Coinbase directly from the packaged app or ship API keys in it. No backend has been deployed and no `.ehpk` has been packaged.
-- `.env*` files are ignored except `.env.example`; commit no local secrets or production credentials.
+- Coinbase is the only external market-data provider, and the app has no Coinbase credentials. The local Node middleware or the deployed Worker—not the Even Hub web app—calls Coinbase.
+- The read-only Cloudflare Worker is available at `https://market-glance-api.pikrimahardhika.workers.dev`; its health endpoint is `/api/health`. `app.json` whitelists this origin, and `.env.production` supplies it to production builds. Local Vite development continues to use the same-origin middleware unless explicitly overridden. The Worker allows only BTC-USD, ETH-USD and SOL-USD; it has a brief per-isolate cache and supports stale fallback when available. Cloudflare Workers Free limits apply. The local middleware is not bundled into an installed app. No `.ehpk` has been packaged, and packaged-app CORS/whitelist behavior still needs testing on the simulator and G2.
+- `.env*` files are ignored except `.env.example` and the public `.env.production`; commit no secrets or production credentials. Vite embeds `VITE_` variables in the client bundle.
 
 ## Test and build
 
@@ -63,7 +63,7 @@ Tests cover market parsing/change calculation, display formatting/range behavior
 
 ## Before any hackathon submission
 
-After the build window opens, continue/rebuild during the event and accurately disclose pre-existing work; run the simulator journey and validate on G2 if available; host/configure the HTTPS backend and test the package CORS/whitelist; prepare the public GitHub/GitLab repository required by the rules, setup notes, a demo video up to 3 minutes, and the short problem/user/how-it-works/track description; list up to five API feature requests if any are discovered; then submit through DoraHacks before the deadline. The repository, deployment and submission have deliberately not been created.
+After the build window opens, continue/rebuild during the event and accurately disclose pre-existing work; run the simulator journey and validate on G2 if available; test the packaged app's CORS/whitelist against the HTTPS backend; prepare setup notes, a demo video up to 3 minutes, and the short problem/user/how-it-works/track description; list up to five API feature requests if any are discovered; then submit through DoraHacks before the deadline. The repository and backend exist, but the project has not been submitted.
 
 ## Official references
 

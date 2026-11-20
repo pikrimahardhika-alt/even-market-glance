@@ -10,7 +10,7 @@
       "name": "network",
       "desc": "Read-only market statistics from the Market Glance API backend.",
       "whitelist": [
-        "https://api.example.invalid"
+        "https://market-glance-api.pikrimahardhika.workers.dev"
       ]
     }
   ],
