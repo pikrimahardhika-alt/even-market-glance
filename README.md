@@ -6,9 +6,11 @@ Market Glance is a calm, glanceable Coinbase market brief for Even G2. Swipe bet
 
 ## Simulator proof
 
-The official Even Hub simulator screenshot below shows a live quote and the +1% marker restored after a full process restart, with no simulator warnings or errors. `evidence/g2-final-watch.png` is the raw RGBA framebuffer; its preview composites the lit-pixel alpha against a dark background for readability.
+The screenshot below was captured from the production `dist` served at its root URL in the official Even Hub simulator v0.9.5. It shows a live BTC quote and a +1% marker set through the glasses contextual menu; after stopping and restarting the simulator process, the marker and quote were restored. Swipe BTC→ETH, tap for details, **Clear mark**, menu selection events and live quote refresh were also exercised.
 
 ![Market Glance with a restored local price marker on the Even G2 simulator](evidence/g2-final-watch-preview.png)
+
+`evidence/g2-final-watch.png` is the raw RGBA framebuffer; its preview composites lit-pixel alpha against a dark background. The simulator does not render the system exit-confirmation dialog: the official [Beta Testing guide](https://hub.evenrealities.com/docs/test/beta-testing) says it appears only on a real install. The root-page handler receives double-click event 3 and calls `shutDownPageContainer(1)`, but that dialog still needs validation on a real install. A first BTC request during the simulator run returned 502; a later live refresh recovered. Serving the raw `.ehpk` as a static octet-stream URL did not render in the simulator, so simulator verification used the production build output that was packaged.
 
 ## Important timing note
 
@@ -33,9 +35,13 @@ Keep the Vite dev server running, then start the official simulator in a second 
 npx --yes @evenrealities/evenhub-simulator@0.9.5 http://localhost:5173 --automation-port 9898
 ```
 
-On G2/R1, swipe up/down to move through the watchlist and tap once for details. Open the Even OS contextual menu to choose **Mark +1%**, **Mark -1%** or **Clear mark**. The menu selection is handled by `menuItemClickEvent`; the value is saved via Even Hub local storage. Simulator automation can open that menu with `POST /api/input` and `{"action":"context_menu"}`, then move/select with `up`/`down` and `click`. A double tap invokes the system-confirmed root-page exit. In a regular browser, use the matching buttons; arrow keys and Enter demonstrate navigation without hardware.
+On G2/R1, swipe up/down to move through the watchlist and tap once for details. Open the Even OS contextual menu to choose **Mark +1%**, **Mark -1%** or **Clear mark**. The menu selection is handled by `menuItemClickEvent`; the value is saved via Even Hub local storage. Simulator automation can open that menu with `POST /api/input` and `{"action":"context_menu"}`, then move/select with `up`/`down` and `click`. A double tap calls `shutDownPageContainer(1)` on the root page; verify the system confirmation on a real install because the simulator does not render that dialog. In a regular browser, use the matching buttons; arrow keys and Enter demonstrate navigation without hardware.
 
-Custom contextual menus require Even App 2.2.9 or newer. The project pins Even Hub SDK 0.0.16 and the simulator 0.9.5.
+Custom contextual menus require Even App 2.2.9 or newer. The project pins Even Hub SDK 0.0.16; the official packer stamps a minimum Even App version of 2.2.10 for that SDK. The simulator version used was 0.9.5.
+
+## Local .ehpk package
+
+The official Even Hub CLI v0.2.0 built `Market-Glance-0.1.0.ehpk` (45,380 bytes) from `app.json` and `dist`; it stamped `min_app_version` 2.2.10 and the artifact checksum was verified. The binary package is kept out of this source repository. It has not been uploaded to Even Hub, installed as a beta/private build, or submitted to DoraHacks. Simulator checks exercised the same production `dist` included in the package; CORS and Even App permission enforcement still need an installed-build check.
 
 ## Local marker behavior and safety
 
@@ -47,7 +53,7 @@ The app checks the marker only after fresh market data arrives while the page is
 
 - Source: [Coinbase Exchange Get product stats](https://docs.cdp.coinbase.com/exchange/reference/exchangerestapi_getproductstats), public `GET /products/{product_id}/stats`. The app computes 24-hour change as `(last - open) / open × 100`; volume is in the base asset.
 - Coinbase is the only external market-data provider, and the app has no Coinbase credentials. The local Node middleware or the deployed Worker—not the Even Hub web app—calls Coinbase.
-- The read-only Cloudflare Worker is available at `https://market-glance-api.pikrimahardhika.workers.dev`; its health endpoint is `/api/health`. `app.json` whitelists this origin, and `.env.production` supplies it to production builds. Local Vite development continues to use the same-origin middleware unless explicitly overridden. The Worker allows only BTC-USD, ETH-USD and SOL-USD; it has a brief per-isolate cache and supports stale fallback when available. Cloudflare Workers Free limits apply. The local middleware is not bundled into an installed app. No `.ehpk` has been packaged, and packaged-app CORS/whitelist behavior still needs testing on the simulator and G2.
+- The read-only Cloudflare Worker is available at `https://market-glance-api.pikrimahardhika.workers.dev`; its health endpoint is `/api/health`. `app.json` whitelists this origin, and `.env.production` supplies it to production builds. Local Vite development continues to use the same-origin middleware unless explicitly overridden. The Worker allows only BTC-USD, ETH-USD and SOL-USD; it has a brief per-isolate cache and supports stale fallback when available. Cloudflare Workers Free limits apply. The local middleware is not bundled into an installed app. The packaged build's CORS and Even App whitelist enforcement still require an installed-build check.
 - `.env*` files are ignored except `.env.example` and the public `.env.production`; commit no secrets or production credentials. Vite embeds `VITE_` variables in the client bundle.
 
 ## Test and build
@@ -63,7 +69,7 @@ Tests cover market parsing/change calculation, display formatting/range behavior
 
 ## Before any hackathon submission
 
-After the build window opens, continue/rebuild during the event and accurately disclose pre-existing work; run the simulator journey and validate on G2 if available; test the packaged app's CORS/whitelist against the HTTPS backend; prepare setup notes, a demo video up to 3 minutes, and the short problem/user/how-it-works/track description; list up to five API feature requests if any are discovered; then submit through DoraHacks before the deadline. The repository and backend exist, but the project has not been submitted.
+After the build window opens, continue/rebuild during the event and accurately disclose pre-existing work. Install and test this exact package as a beta/private build, including live API/CORS and permission behavior, a five-minute locked-phone run, and the root-page exit dialog on real G2 hardware if available. Prepare setup notes, a demo video up to 3 minutes, the short problem/user/how-it-works/track description, and up to five API feature requests if any are discovered. Submit through DoraHacks only after the event-compliant result has been reviewed and the user explicitly approves; no submission has been made.
 
 ## Official references
 
